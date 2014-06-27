@@ -1,0 +1,6 @@
+"main.obj",
+"GPS.obj",
+"LCD.obj",
+"display.obj" 
+TO "GPS test" 
+RAMSIZE(256) 

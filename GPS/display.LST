@@ -1,0 +1,326 @@
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE DISPLAY
+OBJECT MODULE PLACED IN display.OBJ
+COMPILER INVOKED BY: e:\Keil\C51\BIN\C51.EXE display.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          
+   2          
+   3          #include "display.h"
+   4          
+   5          GPS_INFO   GPS;  //GPS信息结构体
+   6          
+   7          
+   8          uchar code beiwei[]     = "北纬";
+   9          uchar code nanwei[]     = "南纬";
+  10          uchar code dongjing[]   = "东经";
+  11          uchar code xijing[]     = "西经";
+  12          uchar code sudu[]       = "速度:";
+  13          uchar code hangxiang[]  = "航向：";
+  14          uchar code gaodu[]      = "高度: ";
+  15          //uchar code jiaodu[]     = "角度: ";
+  16          uchar code haiba[]      = "海拔: ";
+  17          uchar code du[]         = "度";
+  18          uchar code meter[]      = "米";
+  19          uchar code kmperhour[]  = "km/h";
+  20          uchar code date[]       = "    年  月  日  ";
+  21          
+  22          uchar code zongshu[]    = "可见卫星总数: ";
+  23          uchar code shiyong[]    = "使用卫星数  : ";
+  24          uchar code date7[]      = "  GPS 定位系统  ";
+  25          uchar code date8[]      = "    当前时间    ";
+  26          
+  27          
+  28          void Show_Float(float fla, uchar x, uchar y);
+  29          void Show_Float1(int fla, uchar x, uchar y);
+  30          
+  31          
+  32          void GPS_DispTime(void)
+  33          {
+  34   1              uchar i = 0;
+  35   1              uchar ch;
+  36   1      
+  37   1              char time[5];
+  38   1      
+  39   1              
+  40   1              Lcd_DispLine(2, 0, date);  //年月日
+  41   1      
+  42   1              //yearp="     ";
+  43   1              Int_To_Str(GPS.D.year,time);  //将年转换成字符串，存在time中
+  44   1              Lcd_SetPos(2, 0);             //设置显示地址
+  45   1              if(strlen(time)==4)                             //判断接收数据是否有效，有效则显示
+  46   1              {
+  47   2                      i = 0;
+  48   2                      while(time[i] != '\0')
+  49   2                      {
+  50   3                              ch = time[i++];
+  51   3                              Lcd_WriteDat(ch);             //显示年
+  52   3                      }
+  53   2              }
+  54   1      
+  55   1              Int_To_Str(GPS.D.month,time);
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 2   
+
+  56   1              Lcd_SetPos(2, 3);
+  57   1              if(strlen(time)==2)
+  58   1              {
+  59   2                      i = 0;
+  60   2                      while(time[i] != '\0')
+  61   2                      {
+  62   3                              ch =time[i++];
+  63   3                              Lcd_WriteDat(ch);                //显示月
+  64   3                      }
+  65   2              }
+  66   1              Int_To_Str(GPS.D.day,time);
+  67   1              Lcd_SetPos(2, 5);
+  68   1              if(strlen(time)==2)
+  69   1              {
+  70   2                      i = 0;
+  71   2                      while(time[i] != '\0')
+  72   2                      {
+  73   3                              ch =time[i++];
+  74   3                              Lcd_WriteDat(ch);                //显示日
+  75   3                      }
+  76   2              }
+  77   1      
+  78   1              Int_To_Str(GPS.D.hour,time);
+  79   1              Lcd_SetPos(3, 1);
+  80   1                      if(strlen(time)==2)
+  81   1              {
+  82   2                      i = 0;
+  83   2                      while(time[i] != '\0')
+  84   2                      {
+  85   3                              ch =time[i++];
+  86   3                              Lcd_WriteDat(ch);       
+  87   3                      }
+  88   2              }
+  89   1              Lcd_WriteDat(' ');
+  90   1              Lcd_WriteDat(':');
+  91   1      
+  92   1              Int_To_Str(GPS.D.minute,time);
+  93   1              Lcd_SetPos(3, 3);
+  94   1                      if(strlen(time)==2)
+  95   1              {
+  96   2                      i = 0;
+  97   2                      while(time[i] != '\0')
+  98   2                      {
+  99   3                              ch =time[i++];
+ 100   3                              Lcd_WriteDat(ch);       
+ 101   3                      }
+ 102   2              }
+ 103   1              Lcd_WriteDat(' ');
+ 104   1              Lcd_WriteDat(':');
+ 105   1      
+ 106   1              Int_To_Str(GPS.D.second,time);
+ 107   1              Lcd_SetPos(3, 5);
+ 108   1                      if(strlen(time)==2)
+ 109   1              {
+ 110   2                      i = 0;
+ 111   2                      while(time[i] != '\0')
+ 112   2                      {
+ 113   3                              ch =time[i++];
+ 114   3                              Lcd_WriteDat(ch);       
+ 115   3                      }
+ 116   2              }
+ 117   1      }
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 3   
+
+ 118          
+ 119          
+ 120          void GPS_DisplayOne(void)  //第一页显示 时间日期 
+ 121          {
+ 122   1      
+ 123   1              
+ 124   1              clr_screen();//Lcd_WriteCmd(0x01);    //清屏
+ 125   1              Lcd_DispLine(0, 0, date7);  
+ 126   1              Lcd_DispLine(1, 0, date8);  //当前时间
+ 127   1              GPS_DispTime();         //显示日期，时间
+ 128   1              
+ 129   1              
+ 130   1      }
+ 131          
+ 132          void GPS_DisplayTWO(void)
+ 133          {
+ 134   1              uchar ch, i;
+ 135   1               char info[10];
+ 136   1      
+ 137   1              clr_screen();
+ 138   1              Lcd_DispLine(0, 0, sudu); //显示当前速度
+ 139   1              Show_Float(GPS.speed, 0, 3);      //显示速度值
+ 140   1              Lcd_DispLine(0, 6, kmperhour);    //显示速度符号
+ 141   1      
+ 142   1              Lcd_DispLine(1, 0, hangxiang);   //显示当前航向
+ 143   1              Show_Float(GPS.direction, 1, 3); //显示航向值
+ 144   1              Lcd_DispLine(1, 6, du);                  //显示航向符号
+ 145   1      
+ 146   1              if (GPS.NS == 'N')              //判断是北纬还是南纬
+ 147   1          Lcd_DispLine(2, 0, beiwei);         //显示北纬
+ 148   1              else if (GPS.NS == 'S')
+ 149   1              Lcd_DispLine(2, 0, nanwei);             //否则显示南纬
+ 150   1      
+ 151   1              if (GPS.EW == 'E')              //判断是东经还是西经
+ 152   1              Lcd_DispLine(3, 0, dongjing);   //显示东经
+ 153   1              else if (GPS.EW == 'W')
+ 154   1              Lcd_DispLine(3, 0, xijing);         //否则西经
+ 155   1      
+ 156   1      
+ 157   1              Int_To_Str(GPS.latitude_Degree,info);  //显示纬度
+ 158   1              Lcd_SetPos(2, 2);
+ 159   1              if(strlen(info)==2)
+ 160   1              {                                                 //只有正常显示纬度，才显示纬分
+ 161   2                      i = 0;
+ 162   2                      while(info[i] != '\0')
+ 163   2                      {
+ 164   3                              ch = info[i++];
+ 165   3                              Lcd_WriteDat(ch);
+ 166   3                      }
+ 167   2                      Lcd_WriteDat(' ');
+ 168   2                      Lcd_WriteDat(' ');
+ 169   2                      Lcd_WriteDat(0xA1);
+ 170   2                      Lcd_WriteDat(0xE3);     
+ 171   2      
+ 172   2                      Int_To_Str(GPS.latitude_Cent,info);  //显示纬分
+ 173   2                      if(strlen(info)==2)
+ 174   2                      {                                         //只有正常显示纬分，才显示纬秒
+ 175   3                              i = 0;
+ 176   3                              while(info[i] != '\0')
+ 177   3                              {
+ 178   4                                      ch = info[i++];
+ 179   4                                      Lcd_WriteDat(ch);
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 4   
+
+ 180   4                              }
+ 181   3                              Lcd_WriteDat(0xA1);
+ 182   3                              Lcd_WriteDat(0xE4);
+ 183   3      
+ 184   3                              Int_To_Str(GPS.latitude_Second,info);  //显示纬秒
+ 185   3                              if(strlen(info)==2)
+ 186   3                              {
+ 187   4                                      i = 0;
+ 188   4                                      while(info[i] != '\0')
+ 189   4                                      {
+ 190   5                                              ch = info[i++];
+ 191   5                                              Lcd_WriteDat(ch);
+ 192   5                                      }
+ 193   4                              }
+ 194   3                      }       
+ 195   2              } 
+ 196   1              Int_To_Str(GPS.longitude_Degree,info);  //显示经度
+ 197   1              if(strlen(info)==3)
+ 198   1              {
+ 199   2                      Lcd_DispLine(3, 2, info);
+ 200   2                      Lcd_WriteDat(' ');
+ 201   2                      Lcd_WriteDat(0xA1);
+ 202   2                      Lcd_WriteDat(0xE3);
+ 203   2              
+ 204   2                      Int_To_Str(GPS.longitude_Cent,info);  //显示经分
+ 205   2                      if(strlen(info)==2)
+ 206   2                      {
+ 207   3                              Lcd_DispLine(3, 5, info);
+ 208   3                              Lcd_WriteDat(0xA1);
+ 209   3                              Lcd_WriteDat(0xE4);
+ 210   3                      
+ 211   3                              Int_To_Str(GPS.longitude_Second,info);  //显示经秒
+ 212   3                              if(strlen(info)==2)
+ 213   3                              {
+ 214   4                                      Lcd_DispLine(3, 7, info);
+ 215   4                              }
+ 216   3                      }
+ 217   2              } 
+ 218   1      
+ 219   1      }
+ 220          void GPS_DisplayThree(void) //显示速度航向
+ 221          {
+ 222   1              clr_screen();//Lcd_WriteCmd(0x01);    //清屏
+ 223   1      
+ 224   1      
+ 225   1              Lcd_DispLine(0, 0, zongshu);
+ 226   1              Lcd_DispLine(1, 0, shiyong);
+ 227   1              Show_Float1(GPS.satellite, 0, 7);
+ 228   1              Show_Float1(GPS.satellite_use, 1, 7);
+ 229   1      
+ 230   1              Lcd_DispLine(2, 0, gaodu);
+ 231   1              Show_Float(GPS.height_ground, 2, 3);
+ 232   1              Lcd_DispLine(2, 6, meter);
+ 233   1      
+ 234   1              Lcd_DispLine(3, 0, haiba);
+ 235   1              Show_Float(GPS.height_sea, 3, 3);
+ 236   1              Lcd_DispLine(3, 6, meter);
+ 237   1                      
+ 238   1      }
+ 239          void GPS_DisplayFour(void) //显示速度航向
+ 240          {
+ 241   1              Lcd_DispLine(0, 0, zongshu);
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 5   
+
+ 242   1              Show_Float1(GPS.satellite, 0, 7);               
+ 243   1      }
+ 244          
+ 245          void Show_Float(float fla, uchar x, uchar y)
+ 246          {
+ 247   1              int integar;
+ 248   1              char Info[10],ch;
+ 249   1              uchar i;
+ 250   1              
+ 251   1              Lcd_SetPos(x, y);               
+ 252   1              integar = (int)fla;                                                                     // 显示整数部分
+ 253   1              Int_To_Str(fla,Info);  //显示整数部分
+ 254   1              i = 0;
+ 255   1              while(Info[i] !='\0')
+ 256   1              {
+ 257   2                      ch=Info[i++];
+ 258   2                      Lcd_WriteDat(ch);
+ 259   2              }
+ 260   1              Lcd_WriteDat('.');   //显示小数点
+ 261   1      
+ 262   1              fla = fla - integar; //显示小数部分
+ 263   1              
+ 264   1              fla =  fla * 10;     //0.1                                                              // 显示 0.1
+ 265   1              integar = (int) fla;
+ 266   1              fla = fla - integar;                                                                            // 改变fla的值,使fla总是小于1
+ 267   1              ch = integar + 0x30;    
+ 268   1              Lcd_WriteDat(ch);
+ 269   1              
+ 270   1              fla =  fla*10;      //0.01                                                                                      // 显示 0.01
+ 271   1              integar = (int) fla;
+ 272   1              fla = fla - integar;                                                                            // 改变fla的值,使fla总是小于1
+ 273   1              ch = integar + 0x30 ; 
+ 274   1              Lcd_WriteDat(ch);
+ 275   1      }
+ 276          void Show_Float1(int fla, uchar x, uchar y)
+ 277          {
+ 278   1              int integar;
+ 279   1              char Info[10],ch;
+ 280   1              uchar i;
+ 281   1              
+ 282   1              Lcd_SetPos(x, y);               
+ 283   1              integar = (int)fla;                                                                     // 显示整数部分
+ 284   1              Int_To_Str(fla,Info);  //显示整数部分
+ 285   1              i = 0;
+ 286   1              while(Info[i] !='\0')
+ 287   1              {
+ 288   2                      ch=Info[i++];
+ 289   2                      Lcd_WriteDat(ch);
+ 290   2              }
+ 291   1              
+ 292   1      }
+ 293          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1555    ----
+   CONSTANT SIZE    =    139    ----
+   XDATA SIZE       =     54    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      55
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.00   DISPLAY                                                               05/07/2014 13:05:34 PAGE 6   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

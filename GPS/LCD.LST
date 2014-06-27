@@ -1,0 +1,169 @@
+C51 COMPILER V9.00   LCD                                                                   05/07/2014 12:39:43 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN LCD.OBJ
+COMPILER INVOKED BY: e:\Keil\C51\BIN\C51.EXE LCD.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          
+   2          
+   3          #include "LCD.h"
+   4          
+   5          
+   6          void delay(uint z)
+   7          {
+   8   1              uint x, y;
+   9   1              for (x = z; x > 0; x--)
+  10   1                      for(y = 110; y > 0; y--);
+  11   1      }
+  12          uchar fan_zhuan_dat(uchar dat)
+  13          {
+  14   1              uchar i,j=0x01,a,b;
+  15   1              for(i=0;i<8;i++)
+  16   1              {
+  17   2                      a=j&dat;
+  18   2                      a>>=i;
+  19   2                      
+  20   2                      b<<=1;
+  21   2                      j<<=1;
+  22   2                      b=b|a;
+  23   2              }
+  24   1              return b;
+  25   1      }
+  26          void chk_busy() //检测忙
+  27          {
+  28   1         LCD12864_RS=0;
+  29   1         LCD12864_RW=1;
+  30   1         LCD12864_EN=1;
+  31   1         LCD_data=0xff;
+  32   1         while((LCD_data&0x01)==0x01);
+  33   1         LCD12864_EN=0;
+  34   1      }
+  35          void  clr_screen()
+  36          {
+  37   1         Lcd_WriteCmd(0x34);      //扩充指令操作
+  38   1         delay(5);    
+  39   1         Lcd_WriteCmd(0x30);      //基本指令操作
+  40   1         delay(5); 
+  41   1         Lcd_WriteCmd(0x01);      //清屏 
+  42   1         delay(5);     
+  43   1      }
+  44          
+  45          /*
+  46          static bit Lcd_Busy(void)
+  47          {                          
+  48                  bit result;
+  49          
+  50                  LCD_RS = 0;
+  51                  LCD_RW = 1;
+  52                  LCD_EN = 1;
+  53                  DelayNOP();
+  54          
+  55                  result = (bit)(P0&0x80);
+C51 COMPILER V9.00   LCD                                                                   05/07/2014 12:39:43 PAGE 2   
+
+  56                  LCD_EN = 0;
+  57          
+  58                  return(result); 
+  59          }
+  60          */
+  61          
+  62          
+  63          void Lcd_WriteCmd(uchar cmd)
+  64          {                          
+  65   1      
+  66   1              chk_busy();
+  67   1              LCD12864_RS = 0;//数据/命令选择线，这里选择命令
+  68   1              LCD12864_RW = 0;//写模式
+  69   1              LCD_data = fan_zhuan_dat(cmd);//将数据进行反转后赋值给P0口(传送到12864)
+  70   1              LCD12864_EN = 1;//使能端
+  71   1              Nop();
+  72   1              Nop();
+  73   1              Nop();
+  74   1              Nop();
+  75   1              Nop();
+  76   1              Nop();
+  77   1              Nop();
+  78   1              Nop();
+  79   1              LCD12864_EN = 0;        //使能 
+  80   1      }
+  81          
+  82          
+  83          void Lcd_WriteDat(uchar dat)
+  84          {                          
+  85   1              LCD12864_RS = 1;//数据
+  86   1              LCD12864_RW = 0;//写模式
+  87   1              LCD_data = fan_zhuan_dat(dat);
+  88   1              LCD12864_EN = 1;
+  89   1              Nop();
+  90   1              Nop();
+  91   1              Nop();
+  92   1              Nop();
+  93   1              Nop();
+  94   1              Nop();
+  95   1              Nop();
+  96   1              Nop();
+  97   1              LCD12864_EN = 0;
+  98   1      }
+  99          
+ 100          void Lcd_Init(void)
+ 101          { 
+ 102   1      
+ 103   1      
+ 104   1              
+ 105   1              Lcd_WriteCmd(0x34);      //扩充指令操作
+ 106   1              delay(5);
+ 107   1              Lcd_WriteCmd(0x30);      //基本指令操作
+ 108   1              delay(5);
+ 109   1              Lcd_WriteCmd(0x0C);      //显示开，关光标
+ 110   1              delay(5);
+ 111   1              Lcd_WriteCmd(0x01);      //清除LCD的显示内容
+ 112   1              delay(5);
+ 113   1      }
+ 114          
+ 115          
+ 116          
+ 117          void Lcd_SetPos(uchar X,uchar Y)
+C51 COMPILER V9.00   LCD                                                                   05/07/2014 12:39:43 PAGE 3   
+
+ 118          {                          
+ 119   1         uchar  pos;
+ 120   1         if (X==0)
+ 121   1           {X=0x80;}
+ 122   1         else if (X==1)
+ 123   1           {X=0x90;}
+ 124   1         else if (X==2)
+ 125   1           {X=0x88;}
+ 126   1         else if (X==3)
+ 127   1           {X=0x98;}
+ 128   1         pos = X+Y ;  
+ 129   1         Lcd_WriteCmd(pos);     //显示地址
+ 130   1      }
+ 131          
+ 132          
+ 133          void Lcd_DispLine(uchar line, uchar pos, uchar *str)
+ 134          {
+ 135   1              int i = 0;
+ 136   1              Lcd_SetPos(line, pos);
+ 137   1              while (str[i] != '\0')
+ 138   1              {
+ 139   2                      Lcd_WriteDat(str[i]);
+ 140   2                      i++;
+ 141   2              }
+ 142   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    269    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
